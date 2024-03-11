@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Interaction</title>
+</head>
+<body>
+    <h1>API Interaction</h1>
+    
+    <form id="apiForm">
+        <label for="itemsCountInput">Items Count:</label>
+        <input type="text" id="itemsCountInput" name="itemsCountInput" required>
+        <button type="submit">Send Request</button>
+    </form>
+    
+    <div id="response"></div>
+
+    <script>
+        document.getElementById("apiForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            
+            var itemsCount = document.getElementById("itemsCountInput").value; // Get the value from the input field
+            
+            // Make an AJAX request to the API endpoint
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://127.0.0.1/calculate"); // Your API endpoint URL
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        var packs = response.packs;
+                        var responseHTML = "<h2>Response:</h2><ul>";
+                        packs.forEach(function(pack) {
+                            responseHTML += "<li>Size: " + pack.size + ", Count: " + pack.count + "</li>";
+                        });
+                        responseHTML += "</ul>";
+                        document.getElementById("response").innerHTML = responseHTML;
+                    } else {
+                        document.getElementById("response").innerText = "Error: " + xhr.status;
+                    }
+                }
+            };
+            xhr.send(JSON.stringify({items_count: itemsCount})); // Send data to the API endpoint
+        });
+    </script>
+</body>
+</html>
